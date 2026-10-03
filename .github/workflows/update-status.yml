@@ -1,0 +1,112 @@
+name: Update BKK FloodWay Monitor Status
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/update-status.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch and validate production monitor status
+        run: |
+          set -euo pipefail
+          relay_updated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          source_fetch="OK"
+
+          if ! curl -fsS --retry 3 --retry-delay 2 --max-time 15 \
+            https://bkk-floodway-map.bkkfloodway.workers.dev/api/v1/monitor-status \
+            > /tmp/monitor.json; then
+            source_fetch="FAILED"
+            cat > /tmp/monitor.json <<'JSON'
+          {
+            "service":"BKK FloodWay Map",
+            "status":"DANGER",
+            "generatedAt":null,
+            "latestMonitoringSampleAt":null,
+            "monitoringFreshness":"MISSING",
+            "operatingMode":"NORMAL",
+            "activeAlerts":[
+              {
+                "severity":"DANGER",
+                "title":"Monitor endpoint fetch failed",
+                "summary":"The public relay could not fetch the production monitor endpoint.",
+                "lastSeenAt":null
+              }
+            ]
+          }
+          JSON
+          fi
+
+          if [ "$source_fetch" = "OK" ]; then
+            if ! node - <<'NODE'
+          const fs=require("fs");
+          const d=JSON.parse(fs.readFileSync("/tmp/monitor.json","utf8"));
+          if(d.service!=="BKK FloodWay Map") process.exit(2);
+          if(!["NORMAL","WARNING","DANGER"].includes(d.status)) process.exit(3);
+          if(!["FRESH","STALE","MISSING"].includes(d.monitoringFreshness)) process.exit(4);
+          if(!["NORMAL","READ_ONLY"].includes(d.operatingMode)) process.exit(5);
+          if(!Array.isArray(d.activeAlerts)) process.exit(6);
+          NODE
+            then
+              source_fetch="FAILED"
+              cat > /tmp/monitor.json <<'JSON'
+          {
+            "service":"BKK FloodWay Map",
+            "status":"DANGER",
+            "generatedAt":null,
+            "latestMonitoringSampleAt":null,
+            "monitoringFreshness":"MISSING",
+            "operatingMode":"NORMAL",
+            "activeAlerts":[
+              {
+                "severity":"DANGER",
+                "title":"Monitor endpoint response invalid",
+                "summary":"The relay fetched the endpoint but the response did not match the expected contract.",
+                "lastSeenAt":null
+              }
+            ]
+          }
+          JSON
+            fi
+          fi
+
+          RELAY_UPDATED_AT="$relay_updated_at" SOURCE_FETCH="$source_fetch" node - <<'NODE'
+          const fs=require("fs");
+          const d=JSON.parse(fs.readFileSync("/tmp/monitor.json","utf8"));
+          const out={
+            service:d.service,
+            relayUpdatedAt:process.env.RELAY_UPDATED_AT,
+            sourceFetch:process.env.SOURCE_FETCH,
+            generatedAt:d.generatedAt ?? null,
+            latestMonitoringSampleAt:d.latestMonitoringSampleAt ?? null,
+            status:d.status,
+            monitoringFreshness:d.monitoringFreshness,
+            operatingMode:d.operatingMode,
+            activeAlerts:Array.isArray(d.activeAlerts)?d.activeAlerts:[]
+          };
+          fs.writeFileSync("status.json",JSON.stringify(out,null,2)+"\n");
+          NODE
+
+      - name: Commit status
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add status.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Update monitor status"
+          git push
