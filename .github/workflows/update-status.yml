@@ -1,13 +1,9 @@
 name: Update BKK FloodWay Monitor Status
 
+# ChatGPT now performs the regular production watch directly.
+# Keep this relay available only for manual diagnostics to avoid duplicate Actions usage.
 on:
-  schedule:
-    - cron: "17 * * * *"
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/update-status.yml
 
 permissions:
   contents: write
