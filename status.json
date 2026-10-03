@@ -1,0 +1,15 @@
+{
+  "service": "BKK FloodWay Map",
+  "relayUpdatedAt": null,
+  "sourceFetch": "INITIALIZING",
+  "status": "WARNING",
+  "monitoringFreshness": "MISSING",
+  "operatingMode": "NORMAL",
+  "activeAlerts": [
+    {
+      "severity": "WARNING",
+      "title": "Monitor relay initializing",
+      "summary": "Waiting for the first scheduled fetch from the production monitor endpoint."
+    }
+  ]
+}
