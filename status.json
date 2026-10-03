@@ -1,15 +1,18 @@
 {
   "service": "BKK FloodWay Map",
-  "relayUpdatedAt": null,
-  "sourceFetch": "INITIALIZING",
-  "status": "WARNING",
-  "monitoringFreshness": "MISSING",
+  "relayUpdatedAt": "2026-10-03T14:01:28Z",
+  "sourceFetch": "OK",
+  "generatedAt": 1791036088603,
+  "latestMonitoringSampleAt": 1791032840000,
+  "status": "DANGER",
+  "monitoringFreshness": "FRESH",
   "operatingMode": "NORMAL",
   "activeAlerts": [
     {
-      "severity": "WARNING",
-      "title": "Monitor relay initializing",
-      "summary": "Waiting for the first scheduled fetch from the production monitor endpoint."
+      "severity": "DANGER",
+      "title": "無料枠の消費速度が高まっています",
+      "summary": "githubActions: DANGER",
+      "lastSeenAt": 1791032840000
     }
   ]
 }
