@@ -1,6 +1,6 @@
 name: Update BKK FloodWay Monitor Status
 
-# Refresh the minimal public relay once per hour. ChatGPT reads only status.json.
+# Refresh the minimal public relay hourly; ChatGPT reads only status.json.
 on:
   schedule:
     - cron: "17 * * * *"
