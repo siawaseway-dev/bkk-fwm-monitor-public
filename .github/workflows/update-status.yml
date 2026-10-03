@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   update:
@@ -107,36 +105,3 @@ jobs:
             git commit -m "Update monitor status"
             git push
           fi
-
-      - name: Prepare Pages artifact
-        run: |
-          mkdir -p _site
-          cp status.json _site/status.json
-          cat > _site/index.html <<'HTML'
-          <!doctype html>
-          <meta charset="utf-8">
-          <meta name="robots" content="noindex,nofollow">
-          <title>BKK FloodWay Map monitor</title>
-          <h1>BKK FloodWay Map monitor</h1>
-          <pre id="out">Loading…</pre>
-          <script>
-          fetch('./status.json',{cache:'no-store'})
-            .then(r=>r.json())
-            .then(d=>document.getElementById('out').textContent=JSON.stringify(d,null,2))
-            .catch(e=>document.getElementById('out').textContent=String(e));
-          </script>
-          HTML
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: _site
-
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
