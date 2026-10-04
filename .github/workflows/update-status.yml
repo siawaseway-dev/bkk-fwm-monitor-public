@@ -13,12 +13,19 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: bkk-fwm-monitor-relay
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
 
       - name: Fetch and validate production monitor status
         run: |
@@ -108,5 +115,20 @@ jobs:
           git add status.json
           if ! git diff --cached --quiet; then
             git commit -m "Update monitor status"
-            git push
+
+            # A delayed/manual run can start from an older commit while another
+            # relay run has already advanced main. Rebase before pushing so the
+            # freshest status wins instead of failing with a non-fast-forward.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then
+                break
+              fi
+              if [ "$attempt" = "3" ]; then
+                echo "Failed to publish relay status after 3 attempts." >&2
+                exit 1
+              fi
+              sleep $((attempt * 2))
+            done
           fi
