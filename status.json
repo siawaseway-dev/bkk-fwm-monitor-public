@@ -1,11 +1,18 @@
 {
   "service": "BKK FloodWay Map",
-  "relayUpdatedAt": "2026-10-07T23:28:53Z",
+  "relayUpdatedAt": "2026-10-08T00:43:34Z",
   "sourceFetch": "OK",
-  "generatedAt": 1791415734054,
-  "latestMonitoringSampleAt": 1791414442000,
-  "status": "NORMAL",
+  "generatedAt": 1791420214705,
+  "latestMonitoringSampleAt": 1791418032000,
+  "status": "DANGER",
   "monitoringFreshness": "FRESH",
   "operatingMode": "NORMAL",
-  "activeAlerts": []
+  "activeAlerts": [
+    {
+      "severity": "DANGER",
+      "title": "無料枠の消費速度が高まっています",
+      "summary": "githubActions: DANGER",
+      "lastSeenAt": 1791418042000
+    }
+  ]
 }
