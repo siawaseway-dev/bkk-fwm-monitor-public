@@ -1,18 +1,11 @@
 {
   "service": "BKK FloodWay Map",
-  "relayUpdatedAt": "2026-10-09T13:36:53Z",
+  "relayUpdatedAt": "2026-10-09T14:37:54Z",
   "sourceFetch": "OK",
-  "generatedAt": 1791553013628,
-  "latestMonitoringSampleAt": 1791551232000,
-  "status": "WARNING",
+  "generatedAt": 1791556674380,
+  "latestMonitoringSampleAt": 1791554832000,
+  "status": "NORMAL",
   "monitoringFreshness": "FRESH",
   "operatingMode": "NORMAL",
-  "activeAlerts": [
-    {
-      "severity": "WARNING",
-      "title": "監視データの取得に失敗しています",
-      "summary": "Cloudflare Analytics: analytics_http_503",
-      "lastSeenAt": 1791551232000
-    }
-  ]
+  "activeAlerts": []
 }
