@@ -1,9 +1,9 @@
 {
   "service": "BKK FloodWay Map",
-  "relayUpdatedAt": "2026-11-04T18:00:12Z",
+  "relayUpdatedAt": "2026-11-04T23:42:55Z",
   "sourceFetch": "OK",
-  "generatedAt": 1793815213003,
-  "latestMonitoringSampleAt": 1793812032000,
+  "generatedAt": 1793835775984,
+  "latestMonitoringSampleAt": 1793833632000,
   "status": "NORMAL",
   "monitoringFreshness": "FRESH",
   "operatingMode": "NORMAL",
